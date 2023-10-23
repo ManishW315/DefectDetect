@@ -1,7 +1,10 @@
-from setuptools import setup, find_packages
 from typing import List
 
+from setuptools import find_packages, setup
+
+
 def get_requirements(file_path: str) -> List[str]:
+    """Get the requirements/dependencies (packages) in a list."""
     with open(file_path) as f:
         lines = f.readlines()
         requirements = [line.rstrip("\n") for line in lines]
@@ -11,7 +14,7 @@ def get_requirements(file_path: str) -> List[str]:
 
 setup(
     name="defectDetect",
-    version='1.0',
+    version="1.0",
     author="ManishW",
     author_email="manishdrw1@gmail.com",
     description="",
