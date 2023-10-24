@@ -117,7 +117,7 @@ def data_split(
 
 
 def data_transformation(
-    X_train: pd.DataFrame | np.ndarray, X_val: pd.DataFrame | np.ndarray, done_fe: bool = True
+    X_train: pd.DataFrame | np.ndarray, X_val: pd.DataFrame | np.ndarray = None, done_fe: bool = True
 ) -> Tuple[pd.DataFrame | np.ndarray, pd.DataFrame | np.ndarray]:
     """Perform box-cox transform and standardization on data.
 
@@ -146,9 +146,11 @@ def data_transformation(
     pipeline = Pipeline(steps=[("preprocessor", transformer), ("scaler", StandardScaler())])
 
     X_train = pipeline.fit_transform(X_train)
-    X_val = pipeline.transform(X_val)
-
-    return X_train, X_val
+    if X_val != None:
+        X_val = pipeline.transform(X_val)
+        return X_train, X_val
+    else:
+        return X_train
 
 
 class BoxCoxTransformer(BaseEstimator, TransformerMixin):
