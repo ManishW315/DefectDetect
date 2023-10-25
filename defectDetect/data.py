@@ -92,8 +92,7 @@ def feature_engineering(df: pd.DataFrame, drop_features: bool = True) -> pd.Data
 
 
 def data_split(
-    df: pd.DataFrame, split_size: float = 0.2, stratify_on_target: bool = True, target_sep: bool = True, save_dfs: bool = False
-) -> Tuple[pd.DataFrame, pd.DataFrame] | Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    df: pd.DataFrame, split_size: float = 0.2, stratify_on_target: bool = True, target_sep: bool = True, save_dfs: bool = False):
     """Split data into train and test sets.
 
     Args:
@@ -135,8 +134,7 @@ def data_split(
 
 
 def data_transformation(
-    X_train: pd.DataFrame | np.ndarray, X_val: pd.DataFrame | np.ndarray = None, done_fe: bool = True
-) -> Tuple[pd.DataFrame | np.ndarray, pd.DataFrame | np.ndarray]:
+    X_train: pd.DataFrame | np.ndarray, X_val: pd.DataFrame | np.ndarray = None, done_fe: bool = True):
     """Perform box-cox transform and standardization on data.
 
     Args:
