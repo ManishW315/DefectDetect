@@ -6,6 +6,8 @@ from defectDetect import config, data, utils
 
 
 def prediction(df):
+    """Prediction (inference stage)"""
+    os.makedirs(os.path.dirname(config.logs_path), exist_ok=True)
     bxcx = data.BoxCoxTransformer()
     transformer = joblib.load(config.artifacts_transformer_path)
 
@@ -17,6 +19,7 @@ def prediction(df):
         pass
     X = transformer.transform(X)
 
+    config.logger.info("Loading models from pickle files.")
     logregclf_model = joblib.load(os.path.join(config.artifacts_model_pickle_path, "logreg.pkl"))
     knnclf_model = joblib.load(os.path.join(config.artifacts_model_pickle_path, "knnclf.pkl"))
     rfclf_model = joblib.load(os.path.join(config.artifacts_model_pickle_path, "rfclf.pkl"))

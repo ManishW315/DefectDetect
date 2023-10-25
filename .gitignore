@@ -163,5 +163,8 @@ cython_debug/
 catboost_info/
 notebooks/catboost_info/
 
+# logs
+logs/
+
 # Makefile
 Makefile

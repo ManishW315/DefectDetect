@@ -1,8 +1,8 @@
 CatBoostClassifier:
   depth: 8
-  iterations: 400
-  learning_rate: 0.03549840551705406
-  min_data_in_leaf: 10
+  iterations: 150
+  learning_rate: 0.07132559247082337
+  min_data_in_leaf: 3
   random_state: 1234
   verbose: 0
 KNeighborsClassifier:
@@ -11,7 +11,7 @@ KNeighborsClassifier:
   metric: minkowski
   metric_params: null
   n_jobs: null
-  n_neighbors: 250
+  n_neighbors: 300
   p: 2
   weights: distance
 LGBMClassifier:
@@ -19,30 +19,30 @@ LGBMClassifier:
   class_weight: null
   colsample_bytree: 1.0
   importance_type: split
-  learning_rate: 0.032688144532186776
-  max_depth: 6
+  learning_rate: 0.008497774222211027
+  max_depth: 8
   min_child_samples: 20
   min_child_weight: 0.001
   min_split_gain: 0.0
-  n_estimators: 200
+  n_estimators: 500
   n_jobs: null
   num_leaves: 31
   objective: null
   random_state: 1234
-  reg_alpha: 0.1729449098405652
-  reg_lambda: 0.18267460862048387
+  reg_alpha: 0.26589211358074594
+  reg_lambda: 0.17053691220225664
   subsample: 1.0
   subsample_for_bin: 200000
   subsample_freq: 0
   verbose: -1
 LogisticRegression:
-  C: 0.9983288808690397
+  C: 0.7412258603087443
   class_weight: null
   dual: false
   fit_intercept: true
   intercept_scaling: 1
   l1_ratio: null
-  max_iter: 50
+  max_iter: 100
   multi_class: auto
   n_jobs: null
   penalty: l2
@@ -61,10 +61,10 @@ RandomForestClassifier:
   max_leaf_nodes: null
   max_samples: null
   min_impurity_decrease: 0.0
-  min_samples_leaf: 1
-  min_samples_split: 2
+  min_samples_leaf: 2
+  min_samples_split: 5
   min_weight_fraction_leaf: 0.0
-  n_estimators: 450
+  n_estimators: 500
   n_jobs: null
   oob_score: false
   random_state: 1234
@@ -82,11 +82,11 @@ XGBClassifier:
   enable_categorical: false
   eval_metric: null
   feature_types: null
-  gamma: 0.37409629440984726
+  gamma: 0.45722325398922337
   grow_policy: null
   importance_type: null
   interaction_constraints: null
-  learning_rate: 0.013725533621457658
+  learning_rate: 0.021462783224864286
   max_bin: null
   max_cat_threshold: null
   max_cat_to_onehot: null
@@ -97,13 +97,13 @@ XGBClassifier:
   missing: .nan
   monotone_constraints: null
   multi_strategy: null
-  n_estimators: 250
+  n_estimators: 150
   n_jobs: null
   num_parallel_tree: null
   objective: binary:logistic
   random_state: 1234
-  reg_alpha: 0.06186760910800691
-  reg_lambda: 0.10498830679383846
+  reg_alpha: 0.14654551770707946
+  reg_lambda: 0.023499387884968297
   sampling_method: null
   scale_pos_weight: null
   subsample: null
@@ -111,6 +111,4 @@ XGBClassifier:
   validate_parameters: null
   verbosity: null
 hillclimb_weights:
-  CatBoostClassifier: 0.48999999999999977
-  KNeighborsClassifier: 0.11
-  LGBMClassifier: 0.3999999999999998
+  CatBoostClassifier: 0.18999999999999995

@@ -5,8 +5,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import (StratifiedKFold, cross_val_score,
-                                     train_test_split)
+from sklearn.model_selection import StratifiedKFold
 from sklearn.neighbors import KNeighborsClassifier
 
 import optuna
@@ -19,8 +18,10 @@ warnings.filterwarnings("ignore")
 
 
 # Define an objective function to optimize
-def objective(trial, model_name):
+def objective(trial, model_name: str):
+    """Objective function for Optuna tune."""
     # Define hyperparameters to optimize
+    config.logger.info("Defining Optuna objective function.")
     models = {
         "LogisticRegression": LogisticRegression(random_state=1234),
         "KNeighborsClassifier": KNeighborsClassifier(),
@@ -107,6 +108,7 @@ def objective(trial, model_name):
 
 
 def tune():
+    """Tune the model parameters and find/store the best parameters."""
     models = [
         "LogisticRegression",
         "KNeighborsClassifier",
@@ -120,9 +122,11 @@ def tune():
 
     for model_name in models:
         # Create an Optuna study
+        config.logger.info("Creating Optuna study.")
         study = optuna.create_study(direction="maximize")
 
         # Optimize the objective function
+        config.logger.info("Starting Optimization.")
         study.optimize(lambda trial: objective(trial, model_name), n_trials=25)
 
         # Print the best hyperparameters and their corresponding loss (1 - accuracy)

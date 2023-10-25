@@ -23,6 +23,8 @@ def load_dataset(filepath: str, print_info: bool = False) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Pandas DataFrame of the data.
     """
+    os.makedirs(os.path.dirname(config.logs_path), exist_ok=True)
+    config.logger.info("Loading Data.")
     df = pd.read_csv(filepath)
     if print_info:
         print(df.info, "\n")
@@ -40,6 +42,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: Cleaned data.
     """
+    config.logger.info("Cleaning Data Started.")
     # replace '?' with np.nan as they show the same meaning of not knowing the data value.
     df = df.map(lambda x: np.nan if x == "?" else x)
     df.fillna(0, inplace=True)
@@ -49,8 +52,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
     try:
         df["defects"] = df["defects"].astype(int)
-    except:
-        pass
+    except Exception as e:
+        config.logger.warning(e)
 
     return df
 
@@ -66,13 +69,18 @@ def feature_engineering(df: pd.DataFrame, drop_features: bool = True) -> pd.Data
         pd.DataFrame: New data with added features.
     """
     # feature creations
-    df["complex_by_line"] = (df["v(g)"] + df["ev(g)"] + df["iv(g)"]) / df["loc"]
-    df["code_by_cmtblank"] = df["lOCode"] / (df["lOComment"] + df["lOBlank"])
-    df["lines"] = (df["loc"] + df["lOCode"]) / 2
-    df["Opratio"] = df["uniq_Op"] / df["total_Op"]
-    df["Opndratio"] = df["uniq_Opnd"] / df["total_Opnd"]
+    config.logger.info("Feature Engineering Started.")
+    try:
+        df["complex_by_line"] = (df["v(g)"] + df["ev(g)"] + df["iv(g)"]) / df["loc"]
+        df["code_by_cmtblank"] = df["lOCode"] / (df["lOComment"] + df["lOBlank"])
+        df["lines"] = (df["loc"] + df["lOCode"]) / 2
+        df["Opratio"] = df["uniq_Op"] / df["total_Op"]
+        df["Opndratio"] = df["uniq_Opnd"] / df["total_Opnd"]
+    except Exception as e:
+        config.logger.error(e)
 
     if drop_features:
+        config.logger.info("Dropping unwanted features.")
         # drop some features (feature selection)
         df.drop(["n", "locCodeAndComment"], axis=1, inplace=True)
 
@@ -98,6 +106,7 @@ def data_split(
     Returns:
         train-test splits (with/without target setting)
     """
+    config.logger.info("Splitting Data.")
     if stratify_on_target:
         stra = df["defects"]
     else:
@@ -108,12 +117,14 @@ def data_split(
     test = pd.DataFrame(test, columns=df.columns)
 
     if save_dfs:
+        config.logger.info("Saving and storing data splits.")
         df_obj = config.DataConfig()
         os.makedirs(os.path.dirname(df_obj.train_data_path), exist_ok=True)
         train.to_csv(df_obj.train_data_path)
         test.to_csv(df_obj.test_data_path)
 
     if target_sep:
+        config.logger.info("Target Setting.")
         X_train, y_train = train.drop(["defects"], axis=1), train["defects"]
         X_test, y_test = test.drop(["defects"], axis=1), test["defects"]
 
@@ -136,6 +147,7 @@ def data_transformation(
     Returns:
         Transformed X_train and X_val.
     """
+    config.logger.info("Data Transformation Started.")
     features = X_train.columns.tolist()
     if done_fe:
         lim = len(features) - 2

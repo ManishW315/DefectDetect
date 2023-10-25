@@ -12,7 +12,7 @@ from defectDetect import data
 from defectDetect.config import (DataConfig, ModelConfig,
                                  artifacts_model_param_path,
                                  artifacts_results_path,
-                                 artifacts_tuned_model_param_path)
+                                 artifacts_tuned_model_param_path, logger)
 from defectDetect.utils import read_yaml, save_models, write_yaml
 from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
@@ -21,6 +21,7 @@ warnings.filterwarnings("ignore")
 
 
 def hill_climb_ensemble(val_pred_df: pd.DataFrame, y_val: pd.Series, weight_range):
+    logger.info("Initialzing hill climb ensemble.")
     STOP = False
     current_best_ensemble = val_pred_df.iloc[:, 0]
     MODELS = val_pred_df.iloc[:, 1:]
@@ -57,6 +58,7 @@ def hill_climb_ensemble(val_pred_df: pd.DataFrame, y_val: pd.Series, weight_rang
 
 
 def voting_ensemble(models, X_train, y_train, X_val, voting):
+    logger.info("Initializing hill climb ensemble.")
     votclf = VotingClassifier(
         estimators=models,
         voting=voting,
@@ -75,6 +77,7 @@ def train(weight_range, voting, params_path=None):
     X_train, X_val, y_train, y_val = data.data_split(df, save_dfs=True)
     X_train, X_val = data.data_transformation(X_train, X_val)
 
+    logger.info("Training models.")
     logreg_model = LogisticRegression(random_state=1234)
     knnclf_model = KNeighborsClassifier()
     rfclf_model = RandomForestClassifier(random_state=1234)
