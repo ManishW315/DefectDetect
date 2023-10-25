@@ -9,6 +9,7 @@ artifacts_results_path = os.path.join((Path(__file__).parent.parent), "artifacts
 artifacts_tuned_model_param_path = os.path.join((Path(__file__).parent.parent), "artifacts", "tune", "tuned_params.yaml")
 artifacts_tuned_results_path = os.path.join((Path(__file__).parent.parent), "artifacts", "tune", "tuned_results.yaml")
 artifacts_model_pickle_path = os.path.join((Path(__file__).parent.parent), "artifacts", "models")
+artifacts_transformer_path = os.path.join((Path(__file__).parent.parent), "artifacts", "transformer.pkl")
 
 
 @dataclass

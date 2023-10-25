@@ -23,3 +23,8 @@ def save_models(models, names):
     for model, name in zip(models, names):
         filepath = os.path.join(artifacts_model_pickle_path, name + ".pkl")
         joblib.dump(model, filepath)
+
+
+def save_obj(obj, filepath):
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    joblib.dump(obj, filepath)

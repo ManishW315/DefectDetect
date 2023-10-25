@@ -47,7 +47,10 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.columns[:-1]:
         df[col] = df[col].astype(float)
 
-    df["defects"] = df["defects"].astype(int)
+    try:
+        df["defects"] = df["defects"].astype(int)
+    except:
+        pass
 
     return df
 
@@ -147,9 +150,12 @@ def data_transformation(
         verbose_feature_names_out=False,
     )
 
-    pipeline = Pipeline(steps=[("preprocessor", transformer), ("scaler", StandardScaler())])
+    scaler = Pipeline([("std_scaler", StandardScaler())])
 
-    X_train = pipeline.fit_transform(X_train)
+    pipeline = Pipeline(steps=[("preprocessor", transformer), ("scaler", scaler)])
+
+    pipeline.fit(X_train)
+    utils.save_obj(scaler, config.artifacts_transformer_path)
     if type(X_val) == type(None):
         return X_train
     else:
