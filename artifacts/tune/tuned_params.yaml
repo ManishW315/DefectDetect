@@ -1,0 +1,30 @@
+CatBoostClassifier:
+  depth: 8
+  iterations: 400
+  learning_rate: 0.03549840551705406
+  min_data_in_leaf: 10
+KNeighborsClassifier:
+  n_neighbors: 250
+  weights: distance
+LGBMClassifier:
+  learning_rate: 0.032688144532186776
+  max_depth: 6
+  n_estimators: 200
+  reg_alpha: 0.1729449098405652
+  reg_lambda: 0.18267460862048387
+LogisticRegression:
+  C: 0.9983288808690397
+  max_iter: 50
+  solver: newton-cholesky
+RandomForestClassifier:
+  max_depth: 8
+  min_samples_leaf: 1
+  min_samples_split: 2
+  n_estimators: 450
+XGBClassifier:
+  gamma: 0.37409629440984726
+  learning_rate: 0.013725533621457658
+  max_depth: 8
+  n_estimators: 250
+  reg_alpha: 0.06186760910800691
+  reg_lambda: 0.10498830679383846

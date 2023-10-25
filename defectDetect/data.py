@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from defectDetect import config, utils
+
 
 def load_dataset(filepath: str, print_info: bool = False) -> pd.DataFrame:
     """load data from source into a Pandas DataFrame.
@@ -103,8 +105,10 @@ def data_split(
     test = pd.DataFrame(test, columns=df.columns)
 
     if save_dfs:
-        train.to_csv("train.csv")
-        test.to_csv("test.csv")
+        df_obj = config.DataConfig()
+        os.makedirs(os.path.dirname(df_obj.train_data_path), exist_ok=True)
+        train.to_csv(df_obj.train_data_path)
+        test.to_csv(df_obj.test_data_path)
 
     if target_sep:
         X_train, y_train = train.drop(["defects"], axis=1), train["defects"]
@@ -146,11 +150,11 @@ def data_transformation(
     pipeline = Pipeline(steps=[("preprocessor", transformer), ("scaler", StandardScaler())])
 
     X_train = pipeline.fit_transform(X_train)
-    if X_val != None:
+    if type(X_val) == type(None):
+        return X_train
+    else:
         X_val = pipeline.transform(X_val)
         return X_train, X_val
-    else:
-        return X_train
 
 
 class BoxCoxTransformer(BaseEstimator, TransformerMixin):
@@ -177,9 +181,10 @@ class BoxCoxTransformer(BaseEstimator, TransformerMixin):
 
 
 if __name__ == "__main__":
-    df = load_dataset(r"datasets\raw\jm1.csv", print_info=True)
+    d_obj = config.DataConfig()
+    df = load_dataset(d_obj.raw_data_path, print_info=True)
     df = clean_data(df)
     df = feature_engineering(df)
-    X_train, X_val, y_train, y_val = data_split(df)
+    X_train, X_val, y_train, y_val = data_split(df, save_dfs=True)
     X_train, X_val = data_transformation(X_train, X_val)
     print(X_train.shape, X_val.shape, y_train.shape, y_val.shape)

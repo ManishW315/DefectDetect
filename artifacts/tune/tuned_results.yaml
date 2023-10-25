@@ -1,0 +1,6 @@
+CatBoostClassifier: 0.7434953234601398
+KNeighborsClassifier: 0.7513497572536526
+LGBMClassifier: 0.7418658769392111
+LogisticRegression: 0.7234385157734914
+RandomForestClassifier: 0.7446466648024735
+XGBClassifier: 0.7460359128853905

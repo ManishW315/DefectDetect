@@ -1,0 +1,7 @@
+complete: 0.7312390771511587
+hillclimb:
+  LogisticRegression: 0.7133743013434766
+  LogisticRegression + CatBoostClassifier: 0.7293399217612908
+  LogisticRegression + CatBoostClassifier + LGBMClassifier: 0.731742272168987
+  LogisticRegression + CatBoostClassifier + LGBMClassifier + KNeighborsClassifier: 0.7317828524123602
+votclf: 0.7298390587547816

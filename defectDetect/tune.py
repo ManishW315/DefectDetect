@@ -11,7 +11,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 import optuna
 from catboost import CatBoostClassifier
-from defectDetect import data
+from defectDetect import config, data, utils
 from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 
@@ -30,54 +30,63 @@ def objective(trial, model_name):
         "CatBoostClassifier": CatBoostClassifier(random_state=1234, verbose=0),
     }
 
-    params = {
-        "LogisticRegression": dict(
+    if model_name == "LogisticRegression":
+        params = dict(
             C=trial.suggest_float("C", 0.7, 1),
             solver=trial.suggest_categorical("solver", ["liblinear", "newton-cholesky", "saga"]),
             max_iter=trial.suggest_int("max_iter", 50, 150, step=50),
-        ),
-        "KNeighborsClassifier": dict(
+        )
+
+    elif model_name == "KNeighborsClassifier":
+        params = dict(
             n_neighbors=trial.suggest_int("n_neighbors", 50, 500, 50),
             weights=trial.suggest_categorical("weights", ["uniform", "distance"]),
-        ),
-        "RandomForestClassifier": dict(
+        )
+
+    elif model_name == "RandomForestClassifier":
+        params = dict(
             n_estimators=trial.suggest_int("n_estimators", 50, 500, step=50),
             max_depth=trial.suggest_int("max_depth", 2, 8, step=2),
             min_samples_split=trial.suggest_int("min_samples_split", 2, 5),
             min_samples_leaf=trial.suggest_int("min_samples_leaf", 1, 4),
-        ),
-        "LGBMClassifier": dict(
+        )
+
+    elif model_name == "LGBMClassifier":
+        params = dict(
             n_estimators=trial.suggest_int("n_estimators", 50, 500, step=50),
             max_depth=trial.suggest_int("max_depth", 2, 8, step=2),
             learning_rate=trial.suggest_float("learning_rate", 1e-3, 1e-1, log=True),
             reg_alpha=trial.suggest_float("reg_alpha", 0.0, 0.3),
             reg_lambda=trial.suggest_float("reg_lambda", 0.0, 0.2),
-        ),
-        "XGBClassifier": dict(
+        )
+
+    elif model_name == "XGBClassifier":
+        params = dict(
             n_estimators=trial.suggest_int("n_estimators", 50, 500, step=50),
             max_depth=trial.suggest_int("max_depth", 2, 8, step=2),
             learning_rate=trial.suggest_float("learning_rate", 1e-3, 1e-1, log=True),
             gamma=trial.suggest_float("gamma", 0.0, 0.5),
             reg_alpha=trial.suggest_float("reg_alpha", 0.0, 0.3),
             reg_lambda=trial.suggest_float("reg_lambda", 0.0, 0.2),
-        ),
-        "CatBoostClassifier": dict(
+        )
+
+    elif model_name == "CatBoostClassifier":
+        params = dict(
             iterations=trial.suggest_int("iterations", 50, 500, step=50),
             depth=trial.suggest_int("depth", 2, 8, step=2),
             learning_rate=trial.suggest_float("learning_rate", 1e-3, 1e-1, log=True),
             min_data_in_leaf=trial.suggest_int("min_data_in_leaf", 2, 32, log=True),
-        ),
-    }
+        )
 
     # Create a logistic regression with suggested hyperparameters
     model = models[model_name]
-    model.set_params(**params[model_name])
-
+    model.set_params(**params)
     # Perform stratified k-fold cross-validation with train-test splits
     cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)  # Adjust n_splits and other parameters as needed
     scores = []
 
-    df = data.load_dataset(r"datasets\raw\jm1.csv")
+    d_obj = config.DataConfig()
+    df = data.load_dataset(d_obj.raw_data_path)
     df = data.clean_data(df)
     df = data.feature_engineering(df)
     df_X = df.drop(["defects"], axis=1)
@@ -86,7 +95,6 @@ def objective(trial, model_name):
     for train_idx, test_idx in cv.split(X, y):
         X_train, X_test = X.iloc[train_idx], X.iloc[test_idx]
         y_train, y_test = y.iloc[train_idx], y.iloc[test_idx]
-
         model.fit(X_train, y_train)
         y_pred = model.predict_proba(X_test)[:, 1]
         score = roc_auc_score(y_test, y_pred)
@@ -108,6 +116,7 @@ def tune():
         "CatBoostClassifier",
     ]
     artifacts = {}
+    results = {}
 
     for model_name in models:
         # Create an Optuna study
@@ -123,11 +132,13 @@ def tune():
         print("Best Hyperparameters:", best_params)
         print("Best Accuracy:", best_roc_auc_score)
 
-        artifacts[model_name] = {"hyperparameters": best_params, "roc_auc_score": best_roc_auc_score}
+        artifacts[model_name] = best_params
+        results[model_name] = best_roc_auc_score
 
-    return artifacts
+    return artifacts, results
 
 
 if __name__ == "__main__":
-    artifacts = tune()
-    print(artifacts)
+    artifacts, results = tune()
+    utils.write_yaml(artifacts, config.artifacts_tuned_model_param_path)
+    utils.write_yaml(results, config.artifacts_tuned_results_path)
